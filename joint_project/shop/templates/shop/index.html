@@ -1,0 +1,14 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+    <h1>Список товаров</h1>
+    <ul>
+        {% for shop in shops %}
+        <li>
+            <h2><a href="{% url 'detain_goods' shop.pk %}">{{ shop.name }}</a></h2>
+            <p>{{ shop.description }}</p>
+            <sub>{{ shop.price }} руб.</sub>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

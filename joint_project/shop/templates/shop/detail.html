@@ -1,0 +1,9 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+    <h1>{{ shop.name }}</h1>
+    <p>{{ shop.description }}</p>
+    <p>Цена: {{ shop.price }} руб.</p>
+    <p>Количество на складе: {{ shop.count }}</p>
+    <a href="{% url 'index' %}">Назад к списку товаров</a>
+{% endblock %}
