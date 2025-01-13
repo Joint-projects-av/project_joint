@@ -6,6 +6,11 @@
 <h2>{{ product.name }}</h2>
 <p><strong>Цена:</strong> {{ product.price }} руб.</p>
 <p><strong>Описание:</strong> {{ product.description }}</p>
+<p><strong>Фото:</strong>
+{% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+{% endif %}
+</p>
 
 <form method="post" action="{% url 'add_to_cart' product.id %}">
     {% csrf_token %}
