@@ -13,8 +13,12 @@
             </li>
         {% endfor %}
     </ul>
-    <p><strong>Итоговая сумма:</strong> {{ cart.get_total_cost }} руб.</p>
-    <button>Оформить заказ</button>
+    <p><strong>Итоговая сумма:</strong> {{ total_cost|floatformat:2 }} руб.</p>
+
+    <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <button type="submit">Оформить заказ</button>
+    </form>
 {% else %}
     <p>Корзина пуста.</p>
 {% endif %}
