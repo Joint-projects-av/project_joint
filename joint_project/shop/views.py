@@ -45,6 +45,19 @@ class CategoryListView(ListView):
         return context
 
 
+class ProductsByCategoryView(View):
+    template_name = 'shop/products_by_category.html'
+
+    def get(self, request, category_id):
+        category = get_object_or_404(Category, id=category_id)
+        products = Product.objects.filter(category=category)
+        return render(request, self.template_name, {
+            'category': category,
+            'products': products,
+        })
+
+
+
 class RegisterView(View):
     template_name = 'shop/register.html'
 
@@ -89,7 +102,13 @@ class CartView(LoginRequiredMixin, View):
     def get(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         items = cart.cartitem_set.all()
-        return render(request, self.template_name, {'cart': cart, 'items': items})
+        total_cost = cart.get_total_cost()
+        return render(request, self.template_name, {
+            'cart': cart,
+            'items': items,
+            'total_cost': total_cost
+        })
+
 
 
 class AddToCartView(LoginRequiredMixin, View):
