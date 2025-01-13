@@ -1,31 +1,26 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %}Интернет Магазин{% endblock %}</title>
 </head>
 <body>
-
-<nav>
-    <div>
-        <a href="{% url 'index' %}">Главная</a>
-        <a href="{% url 'category' %}">Категории</a>
-    </div>
-</nav>
-<hr>
-
-    {% block content %}
-        <p>Это страница с base.html</p>
-    {% endblock %}
-
-<footer>
-    <hr>
-    <p>это подвал сайта</p>
-</footer>
-
-<script src="{% static 'js/main.js' %}"></script>
+    <header>
+        <h1>Интернет Магазин</h1>
+        <nav>
+            <a href="{% url 'index' %}">Главная</a>
+            <a href="{% url 'categories' %}">Категории</a>
+            <a href="{% url 'cart' %}">Корзина</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'order_history' %}">Заказы</a>
+                <a href="{% url 'logout' %}">Выход</a>
+            {% else %}
+                <a href="{% url 'login' %}">Вход</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
