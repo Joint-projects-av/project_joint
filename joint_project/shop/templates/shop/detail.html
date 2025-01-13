@@ -1,9 +1,16 @@
 {% extends 'shop/base.html' %}
 
+{% block title %}{{ product.name }}{% endblock %}
+
 {% block content %}
-    <h1>{{ shop.name }}</h1>
-    <p>{{ shop.description }}</p>
-    <p>Цена: {{ shop.price }} руб.</p>
-    <p>Количество на складе: {{ shop.count }}</p>
-    <a href="{% url 'index' %}">Назад к списку товаров</a>
+<h2>{{ product.name }}</h2>
+<p><strong>Цена:</strong> {{ product.price }} руб.</p>
+<p><strong>Описание:</strong> {{ product.description }}</p>
+
+<form method="post" action="{% url 'add_to_cart' product.id %}">
+    {% csrf_token %}
+    <button type="submit">Добавить в корзину</button>
+</form>
+
+<a href="{% url 'index' %}">Назад на главную</a>
 {% endblock %}
