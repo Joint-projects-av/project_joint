@@ -1,0 +1,16 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Бренды{% endblock %}
+
+{% block content %}
+<h2>Бренды</h2>
+<ul>
+    {% for brand in brands %}
+        <li>
+            <a href="{% url 'products_by_brand' brand.id %}">{{ brand.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'index' %}">Назад на главную</a>
+{% endblock %}

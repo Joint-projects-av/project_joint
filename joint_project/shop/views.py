@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView, DetailView
 
-from .models import Product, Category, Cart, CartItem, Order, OrderItem
+from .models import Product, Category, Cart, CartItem, Order, OrderItem, Brand
 
 
 # Create your views here.
@@ -62,7 +62,7 @@ class AddToCartView(View):
 
 class CategoryListView(ListView):
     model = Category
-    template_name = 'shop/category.html'
+    template_name = 'shop/category_list.html'
     context_object_name = 'categories'
 
     def get_context_data(self, **kwargs):
@@ -79,6 +79,18 @@ class ProductsByCategoryView(View):
         products = Product.objects.filter(category=category)
         return render(request, self.template_name, {
             'category': category,
+            'products': products,
+        })
+
+
+class ProductSearchByBrandView(View):
+    template_name = 'shop/products_by_brand.html'
+
+    def get(self, request, brand_id):
+        brand = get_object_or_404(Brand, id=brand_id)
+        products = Product.objects.filter(brand=brand)
+        return render(request, self.template_name, {
+            'brand': brand,
             'products': products,
         })
 

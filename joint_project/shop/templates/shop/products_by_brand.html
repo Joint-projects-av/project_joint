@@ -1,9 +1,9 @@
 {% extends 'shop/base.html' %}
 
-{% block title %}Товары в категории: {{ category.name }}{% endblock %}
+{% block title %}Товары бренда: {{ brand_name }}{% endblock %}
 
 {% block content %}
-<h2>Товары в категории: {{ category.name }}</h2>
+<h2>Товары бренда: {{ brand_name }}</h2>
 
 {% if products %}
     <ul>
@@ -14,7 +14,7 @@
         {% endfor %}
     </ul>
 {% else %}
-    <p>В этой категории пока нет товаров.</p>
+    <p>Нет товаров этого бренда.</p>
 {% endif %}
 
 <a href="{% url 'categories' %}">Назад к категориям</a>
