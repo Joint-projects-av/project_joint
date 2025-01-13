@@ -9,6 +9,8 @@
 <p><strong>Фото:</strong>
 {% if product.image %}
     <img src="{{ product.image.url }}" alt="{{ product.name }}">
+{% else %}
+    Фото отсутствует
 {% endif %}
 </p>
 
