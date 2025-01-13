@@ -1,11 +1,14 @@
 {% extends 'shop/base.html' %}
 
+{% block title %}Категории{% endblock %}
+
 {% block content %}
-    <h1>Категории товаров</h1>
-    <ul>
-        {% for cat in cats %}
-        <li>{{ cat.title }}</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'index' %}">Назад к списку товаров</a>
+<h2>Категории</h2>
+<ul>
+    {% for category in categories %}
+        <li>{{ category.name }}</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'index' %}">Назад на главную</a>
 {% endblock %}
