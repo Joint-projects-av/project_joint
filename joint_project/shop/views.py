@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,7 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView, DetailView
 
-from .models import Product, Category, Cart, CartItem, Order
+from .models import Product, Category, Cart, CartItem, Order, OrderItem
 
 
 # Create your views here.
@@ -32,6 +33,31 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['title'] = self.object.name
         return context
+
+
+class AddToCartView(View):
+    def post(self, request, product_id):
+        # Получаем корзину пользователя (если ее нет — создаем новую)
+        cart, created = Cart.objects.get_or_create(user=request.user)
+
+        # Получаем товар по ID
+        product = Product.objects.get(id=product_id)
+
+        # Проверяем, есть ли уже этот товар в корзине
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+        if created:
+            # Если товар был добавлен впервые, установим количество в 1
+            cart_item.quantity = 1
+            cart_item.save()
+            messages.success(request, f'Товар "{product.name}" добавлен в корзину.')
+        else:
+            # Если товар уже в корзине, увеличиваем его количество на 1
+            cart_item.quantity += 1
+            cart_item.save()
+            messages.success(request, f'Количество товара "{product.name}" увеличено на 1.')
+
+        return redirect('cart')
 
 
 class CategoryListView(ListView):
@@ -121,9 +147,49 @@ class AddToCartView(LoginRequiredMixin, View):
         return redirect('cart')
 
 
-class OrderHistoryView(LoginRequiredMixin, ListView):
-    template_name = 'shop/order_history.html'
-    context_object_name = 'orders'
+class CheckoutView(LoginRequiredMixin, View):
+    def post(self, request):
+        cart = Cart.objects.filter(user=request.user).first()
 
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        if not cart or not cart.cartitem_set.exists():
+            messages.error(request, "Корзина пуста.")
+            return redirect('cart')
+
+        # Создаем заказ
+        order = Order.objects.create(user=request.user)
+
+        # Копируем товары из корзины в заказ и сохраняем цену каждого товара
+        for cart_item in cart.cartitem_set.all():
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                price=cart_item.product.price
+            )
+
+        # Очищаем корзину
+        cart.cartitem_set.all().delete()
+
+        messages.success(request, f"Ваш заказ №{order.id} успешно оформлен!")
+        return redirect('order_history')
+
+
+
+class OrderHistoryView(LoginRequiredMixin, View):
+    template_name = 'shop/order_history.html'
+
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user).order_by('-created_at')
+        return render(request, self.template_name, {'orders': orders})
+
+
+class OrderDetailView(LoginRequiredMixin, View):
+    template_name = 'shop/order_detail.html'
+
+    def get(self, request, pk):
+        order = Order.objects.filter(pk=pk, user=request.user).first()
+        if not order:
+            messages.error(request, "Заказ не найден.")
+            return redirect('order_history')
+
+        return render(request, self.template_name, {'order': order})

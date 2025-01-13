@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     IndexView, ProductDetailView, CategoryListView, RegisterView, LoginView, LogoutView,
-    CartView, AddToCartView, OrderHistoryView, ProductsByCategoryView
+    CartView, AddToCartView, OrderHistoryView, ProductsByCategoryView, CheckoutView, OrderDetailView
 )
 
 urlpatterns = [
@@ -14,5 +14,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('cart/', CartView.as_view(), name='cart'),
     path('cart/add/<int:product_id>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('cart/checkout/', CheckoutView.as_view(), name='checkout'),
     path('order-history/', OrderHistoryView.as_view(), name='order_history'),
+    path('order/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
 ]

@@ -1,0 +1,21 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Детали заказа{% endblock %}
+
+{% block content %}
+<h2>Детали заказа №{{ order.id }}</h2>
+
+<p><strong>Пользователь:</strong> {{ order.user.username }}</p>
+<p><strong>Дата:</strong> {{ order.created_at|date:"d M Y, H:i" }}</p>
+
+<h3>Товары:</h3>
+<ul>
+    {% for item in order.order_items.all %}
+        <li>{{ item.product.name }} - {{ item.quantity }} шт. - {{ item.get_cost|floatformat:2 }} руб.</li>
+    {% endfor %}
+</ul>
+
+<p><strong>Итоговая сумма:</strong> {{ order.get_total_cost|floatformat:2 }} руб.</p>
+
+<a href="{% url 'order_history' %}">Назад к истории заказов</a>
+{% endblock %}
