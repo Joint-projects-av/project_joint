@@ -1,10 +1,12 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.views.generic import ListView, DetailView
 
-from .models import Product, Category
+from .models import Product, Category, Cart, CartItem, Order
+
 
 # Create your views here.
 
@@ -80,3 +82,29 @@ class LogoutView(View):
         logout(request)
         return redirect('index')
 
+
+class CartView(LoginRequiredMixin, View):
+    template_name = 'shop/cart.html'
+
+    def get(self, request):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        items = cart.cartitem_set.all()
+        return render(request, self.template_name, {'cart': cart, 'items': items})
+
+
+class AddToCartView(LoginRequiredMixin, View):
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        cart_item.quantity += 1
+        cart_item.save()
+        return redirect('cart')
+
+
+class OrderHistoryView(LoginRequiredMixin, ListView):
+    template_name = 'shop/order_history.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
